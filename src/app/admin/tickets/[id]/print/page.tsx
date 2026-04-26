@@ -42,7 +42,7 @@ export default async function PrintTicketPage({
           <h1>{ticket.guestName}</h1>
           <p className="muted">
             This page prints the same invitation layout shown on screen. In the print dialog,
-            choose `A6`, `Landscape`, and `100%` scale.
+            choose `A6`, `Portrait`, and `100%` scale.
           </p>
         </div>
 
