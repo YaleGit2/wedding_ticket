@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Download, Printer } from "lucide-react";
+import { Download, ExternalLink, Printer } from "lucide-react";
 import { DeleteTicketButton } from "@/components/delete-ticket-button";
 import { LogoutButton } from "@/components/logout-button";
 import { TicketPreviewCard } from "@/components/ticket-preview-card";
@@ -35,6 +35,10 @@ export default async function TicketDetailPage({
           <p className="muted">Created {formatDateTime(ticket.createdAt)}</p>
         </div>
         <div className="hero-actions">
+          <Link className="button button-ghost" href={`/invite/${ticket.token}`} target="_blank">
+            <ExternalLink size={18} />
+            View invite
+          </Link>
           <a className="button button-secondary" href={`/api/tickets/${ticket.id}/pdf?download=1`}>
             <Download size={18} />
             Download PDF

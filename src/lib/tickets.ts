@@ -83,8 +83,14 @@ export async function getTicketForAdmin(id: string) {
 }
 
 export async function deleteTicket(id: string) {
-  return prisma.ticket.delete({
-    where: { id },
+  return prisma.$transaction(async (tx) => {
+    await tx.scanEvent.deleteMany({
+      where: { ticketId: id },
+    });
+
+    return tx.ticket.delete({
+      where: { id },
+    });
   });
 }
 

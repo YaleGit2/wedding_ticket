@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Checkpoint, ScanResult } from "@prisma/client";
-import { Download, Printer } from "lucide-react";
+import { Download, ExternalLink, Printer } from "lucide-react";
 import { DeleteTicketButton } from "@/components/delete-ticket-button";
 import { EventSettingsForm } from "@/components/event-settings-form";
 import { LogoutButton } from "@/components/logout-button";
@@ -94,6 +94,15 @@ export default async function AdminTicketsPage() {
                       <td>{formatDateTime(ticket.createdAt)}</td>
                       <td>
                         <div className="table-actions">
+                          <Link
+                            aria-label={`View invite for ${ticket.guestName}`}
+                            className="icon-action"
+                            href={`/invite/${ticket.token}`}
+                            target="_blank"
+                            title="View invite"
+                          >
+                            <ExternalLink size={16} />
+                          </Link>
                           <Link
                             aria-label={`Print ticket for ${ticket.guestName}`}
                             className="icon-action"

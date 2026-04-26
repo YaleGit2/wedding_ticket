@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useState, useTransition } from "react";
+import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 
 export function AdminTicketForm() {
@@ -10,13 +10,14 @@ export function AdminTicketForm() {
   const [tableNumber, setTableNumber] = useState("");
   const [notes, setNotes] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const [pending, startTransition] = useTransition();
+  const [pending, setPending] = useState(false);
 
-  const onSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setError(null);
+    setPending(true);
 
-    startTransition(async () => {
+    try {
       const response = await fetch("/api/tickets", {
         method: "POST",
         headers: {
@@ -30,20 +31,25 @@ export function AdminTicketForm() {
         }),
       });
 
-      if (!response.ok) {
-        const payload = (await response.json().catch(() => null)) as { error?: string } | null;
+      const payload = (await response.json().catch(() => null)) as
+        | { error?: string; ticketId?: string }
+        | null;
+
+      if (!response.ok || !payload?.ticketId) {
         setError(payload?.error ?? "Ticket creation failed.");
+        setPending(false);
         return;
       }
 
-      const payload = (await response.json()) as { ticketId: string };
       router.push(`/admin/tickets/${payload.ticketId}`);
-      router.refresh();
-    });
+    } catch {
+      setError("Ticket creation failed. Check that the app server is running and try again.");
+      setPending(false);
+    }
   };
 
   return (
-    <form className="panel stack-lg" onSubmit={onSubmit}>
+    <form action="/api/tickets" className="panel stack-lg" method="post" onSubmit={onSubmit}>
       <div className="panel-header">
         <p className="eyebrow">Issue Ticket</p>
         <h2>Create a new invitation</h2>

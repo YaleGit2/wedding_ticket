@@ -11,6 +11,7 @@ type TicketPreviewCardProps = {
     result: ScanResult;
     createdAt: Date;
   }>;
+  showScanStatus?: boolean;
 };
 
 export function TicketPreviewCard({
@@ -18,6 +19,7 @@ export function TicketPreviewCard({
   ticket,
   qrDataUrl,
   scanSummary = [],
+  showScanStatus = true,
 }: TicketPreviewCardProps) {
   return (
     <article className="ticket-card">
@@ -76,22 +78,24 @@ export function TicketPreviewCard({
         </div>
       </div>
 
-      <div className="ticket-card__footer">
-        <div className="status-pills">
-          {[Checkpoint.OUTSIDE, Checkpoint.INSIDE].map((checkpoint) => {
-            const used = scanSummary.some(
-              (scan) => scan.checkpoint === checkpoint && scan.result === ScanResult.ALLOW,
-            );
+      {showScanStatus ? (
+        <div className="ticket-card__footer">
+          <div className="status-pills">
+            {[Checkpoint.OUTSIDE, Checkpoint.INSIDE].map((checkpoint) => {
+              const used = scanSummary.some(
+                (scan) => scan.checkpoint === checkpoint && scan.result === ScanResult.ALLOW,
+              );
 
-            return (
-              <span className={`status-pill ${used ? "used" : ""}`} key={checkpoint}>
-                {checkpoint === Checkpoint.OUTSIDE ? "Outside" : "Inside"}:{" "}
-                {used ? "Used" : "Unused"}
-              </span>
-            );
-          })}
+              return (
+                <span className={`status-pill ${used ? "used" : ""}`} key={checkpoint}>
+                  {checkpoint === Checkpoint.OUTSIDE ? "Outside" : "Inside"}:{" "}
+                  {used ? "Used" : "Unused"}
+                </span>
+              );
+            })}
+          </div>
         </div>
-      </div>
+      ) : null}
     </article>
   );
 }
