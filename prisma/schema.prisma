@@ -1,0 +1,70 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  OUTSIDE
+  INSIDE
+}
+
+enum Checkpoint {
+  OUTSIDE
+  INSIDE
+}
+
+enum ScanResult {
+  ALLOW
+  DENY
+}
+
+model Credential {
+  id           String   @id @default(cuid())
+  role         Role     @unique
+  passwordHash String
+  updatedAt    DateTime @updatedAt
+  createdAt    DateTime @default(now())
+}
+
+model EventSettings {
+  id             String   @id @default("event")
+  weddingTitle   String
+  coupleNames    String
+  weddingDate    String
+  venue          String
+  programDetails String
+  updatedAt      DateTime @updatedAt
+  createdAt      DateTime @default(now())
+}
+
+model Ticket {
+  id             String      @id @default(cuid())
+  ticketCode     String      @unique
+  token          String      @unique
+  tokenHash      String      @unique
+  guestName      String
+  numberOfGuests Int?
+  tableNumber    String?
+  notes          String?
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  scans          ScanEvent[]
+}
+
+model ScanEvent {
+  id         String     @id @default(cuid())
+  ticketId   String
+  checkpoint Checkpoint
+  result     ScanResult
+  scannerRole Role
+  message    String
+  createdAt  DateTime   @default(now())
+  ticket     Ticket     @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+
+  @@index([ticketId, checkpoint, result])
+}
